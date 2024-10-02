@@ -7,7 +7,7 @@ on:
       - main
 concurrency:
   # specify that if a workflow run is already in progress for the same Workflow and Git reference combination (group), it should be canceled when a new workflow run is triggered
-  group: ${{ github.workflow }}-${{ github-ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   build-app:
