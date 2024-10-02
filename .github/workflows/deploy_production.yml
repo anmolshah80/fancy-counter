@@ -1,0 +1,52 @@
+name: Build and Deploy
+env:
+  ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  # specify that if a workflow run is already in progress for the same Workflow and Git reference combination (group), it should be canceled when a new workflow run is triggered
+  group: ${{ github.workflow }}-${{ github-ref }}
+  cancel-in-progress: true
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.17.0'
+          cache: 'npm'
+      - name: Install node_modules
+        run: npm install
+      - name: Build Project
+        run: npm run build
+      - name: Confirm the presence of dist folder
+        run: tree -I 'node_modules'
+      - name: Upload dist folder contents
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          if-no-files-found: error
+          path: dist
+          retention-days: 1
+
+  deploy-app:
+    needs: build-app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dowload dist folder contents
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist
+      - name: Confirm the contents of dist folder
+        run: tree
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_token: $ACTIONS_DEPLOY_KEY
+          publish_dir: dist
