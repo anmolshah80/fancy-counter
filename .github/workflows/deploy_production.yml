@@ -48,5 +48,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_token: $ACTIONS_DEPLOY_KEY
+          deploy_key: $ACTIONS_DEPLOY_KEY
           publish_dir: dist
