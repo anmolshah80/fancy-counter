@@ -1,6 +1,6 @@
 name: Build and Deploy
 env:
-  ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+  GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 on:
   push:
     branches:
@@ -48,6 +48,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_key: $ACTIONS_DEPLOY_KEY
+          personal_token: $GITHUB_ACCESS_TOKEN
           publish_branch: main
           publish_dir: dist
