@@ -1,14 +1,21 @@
 name: Build and Deploy
-env:
-  GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+
 on:
   push:
     branches:
       - main
+
+# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Specify that if a workflow run is already in progress for the same Workflow and Git reference combination (group) then, it should be canceled when a new workflow run is triggered
 concurrency:
-  # specify that if a workflow run is already in progress for the same Workflow and Git reference combination (group), it should be canceled when a new workflow run is triggered
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   build-app:
     runs-on: ubuntu-latest
@@ -20,34 +27,29 @@ jobs:
         with:
           node-version: '20.17.0'
           cache: 'npm'
-      - name: Install node_modules
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
       - name: Build Project
         run: npm run build
       - name: Confirm the presence of dist folder
         run: tree -I 'node_modules'
-      - name: Upload dist folder contents
-        uses: actions/upload-artifact@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: build
-          if-no-files-found: error
-          path: dist
-          retention-days: 1
+          path: ./dist
+      - name: Deploy
 
   deploy-app:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     needs: build-app
     runs-on: ubuntu-latest
     steps:
-      - name: Dowload dist folder contents
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: dist
       - name: Confirm the contents of dist folder
         run: tree
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          personal_token: $GITHUB_ACCESS_TOKEN
-          publish_branch: main
-          publish_dir: dist
+        id: deployment
+        uses: actions/download-artifact@v4
