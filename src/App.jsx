@@ -1,17 +1,9 @@
-import Title from '@/components/Title';
-import Count from '@/components/Count';
-import ResetButton from '@/components/ResetButton';
-import CountButtons from '@/components/CountButtons';
+import Card from '@/components/Card';
 
 function App() {
   return (
     <main>
-      <div>
-        <Title />
-        <Count />
-        <ResetButton />
-        <CountButtons />
-      </div>
+      <Card />
     </main>
   );
 }
