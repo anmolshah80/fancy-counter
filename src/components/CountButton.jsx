@@ -1,5 +1,7 @@
 import { MinusIcon, PlusIcon } from '@radix-ui/react-icons';
 
+import { UPPER_LIMIT, LOWER_LIMIT } from '@/constants/constants';
+
 const RenderPlusOrMinusIcon = ({ type }) => {
   if (type === 'minus') return <MinusIcon className="count-btn-icon" />;
 
@@ -9,15 +11,23 @@ const RenderPlusOrMinusIcon = ({ type }) => {
 const CountButton = ({ type, count, setCount }) => {
   const handleCountDecrease = () => {
     setCount((previousValue) => {
-      if (previousValue === 0) return previousValue;
+      if (previousValue === LOWER_LIMIT) return previousValue;
 
       return previousValue - 1;
     });
   };
 
+  const handleCountIncrease = () => {
+    setCount((previousValue) => {
+      if (previousValue >= UPPER_LIMIT) return UPPER_LIMIT;
+
+      return previousValue + 1;
+    });
+  };
+
   const handleClick = (event) => {
     if (type === 'plus') {
-      setCount((previousValue) => previousValue + 1);
+      handleCountIncrease();
     } else {
       handleCountDecrease();
     }
@@ -26,7 +36,7 @@ const CountButton = ({ type, count, setCount }) => {
   };
 
   const buttonClassName = `count-btn ${
-    type === 'minus' && count === 0 ? 'count-btn-disabled' : ''
+    type === 'minus' && count === LOWER_LIMIT ? 'count-btn-disabled' : ''
   }`;
 
   return (
@@ -34,7 +44,7 @@ const CountButton = ({ type, count, setCount }) => {
       <button
         className={buttonClassName}
         onClick={handleClick}
-        disabled={type === 'minus' && count === 0}
+        disabled={type === 'minus' && count === LOWER_LIMIT}
       >
         <RenderPlusOrMinusIcon type={type} />
       </button>

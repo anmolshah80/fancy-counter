@@ -6,12 +6,12 @@ import ResetButton from '@/components/ResetButton';
 import ButtonContainer from '@/components/ButtonContainer';
 import CountButton from '@/components/CountButton';
 
-const UPPER_LIMIT = 100;
+import { UPPER_LIMIT } from '@/constants/constants';
 
 const Card = () => {
   const [count, setCount] = useState(0);
 
-  const locked = count > UPPER_LIMIT ? true : false;
+  const locked = count === UPPER_LIMIT ? true : false;
 
   const cardClassName = `card ${locked ? 'card--limit' : ''}`;
 
